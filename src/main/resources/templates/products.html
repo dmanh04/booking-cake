@@ -1,330 +1,282 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{::main}, 'Sản Phẩm - Bakery', ~{::extraHead}, ~{::extraScripts})}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sản Phẩm - Anh Hoa Bakery</title>
-    <link rel="stylesheet" href="/css/style.css">
+    <!-- Tiêu đề này sẽ không được sử dụng, vì nó được truyền trực tiếp trong th:replace -->
+    <title>Sản Phẩm -  Bakery</title>
+    <th:block th:fragment="extraHead">
+        <link rel="stylesheet" th:href="@{/css/login.css}">
+        <style>
+            .nav-menu a.active {
+                color: #FFD700;
+            }
+
+            .products-page {
+                padding: 60px 0;
+                background: #f8f9fa;
+            }
+
+            .page-header {
+                text-align: center;
+                margin-bottom: 50px;
+            }
+
+            .page-header h1 {
+                font-size: 42px;
+                color: #8B4513;
+                margin-bottom: 10px;
+            }
+
+            .page-header p {
+                font-size: 18px;
+                color: #666;
+            }
+
+            .category-filter {
+                display: flex;
+                justify-content: center;
+                gap: 15px;
+                margin-bottom: 40px;
+                flex-wrap: wrap;
+            }
+
+            .filter-btn {
+                background: white;
+                border: 2px solid #8B4513;
+                color: #8B4513;
+                padding: 10px 20px;
+                border-radius: 25px;
+                cursor: pointer;
+                font-weight: bold;
+                transition: all 0.3s;
+            }
+
+            .filter-btn.active,
+            .filter-btn:hover {
+                background: #8B4513;
+                color: white;
+            }
+
+            .products-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 30px;
+            }
+
+            .product-item {
+                transition: opacity 0.3s;
+            }
+
+            .product-item.hidden {
+                display: none;
+            }
+
+            .product-info {
+                padding: 20px;
+            }
+
+            .product-description {
+                color: #666;
+                margin-bottom: 15px;
+                font-size: 14px;
+            }
+
+            .product-variants {
+                margin-bottom: 20px;
+            }
+
+            .variant {
+                display: inline-block;
+                background: #f0f0f0;
+                padding: 5px 10px;
+                border-radius: 15px;
+                font-size: 12px;
+                margin: 2px;
+                color: #8B4513;
+                font-weight: bold;
+            }
+
+            .product-actions {
+                display: flex;
+                gap: 10px;
+            }
+
+            .view-details {
+                background: transparent;
+                border: 2px solid #8B4513;
+                color: #8B4513;
+                padding: 10px 15px;
+                border-radius: 5px;
+                cursor: pointer;
+                font-weight: bold;
+                transition: all 0.3s;
+                flex: 1;
+            }
+
+            .view-details:hover {
+                background: #8B4513;
+                color: white;
+            }
+
+            .add-to-cart {
+                flex: 1;
+            }
+
+            @media (max-width: 768px) {
+                .products-grid {
+                    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                    gap: 20px;
+                }
+
+                .product-actions {
+                    flex-direction: column;
+                }
+            }
+        </style>
+    </th:block>
+
 </head>
 <body>
-<!-- Header (same as index.html) -->
-<header class="header">
-    <div class="container">
-        <div class="header-top">
-            <div class="contact-info">
-                <span>📞 0901 462 179</span>
-                <span>📍 Hà Nội</span>
+<!-- Hero Section -->
+<main>
+    <section class="products-page">
+        <div class="container">
+            <div class="page-header">
+                <h1>SẢN PHẨM</h1>
+                <p>Khám phá bộ sưu tập bánh ngọt cao cấp của chúng tôi</p>
             </div>
-            <div class="user-actions">
-                <a href="login.html">Đăng nhập</a>
-                <a href="cart.html">🛒 Giỏ hàng</a>
+
+            <!-- Category Filter -->
+            <div class="category-filter">
+                <button class="filter-btn active" data-category="all">Tất cả</button>
+                <button class="filter-btn" data-category="mooncake">Bánh Trung Thu</button>
+                <button class="filter-btn" data-category="cake">Bánh Kem</button>
+                <button class="filter-btn" data-category="petit">Petit Four</button>
+                <button class="filter-btn" data-category="cookies">Cookies</button>
             </div>
-        </div>
-        <nav class="navbar">
-            <div class="logo">
-                <img src="/placeholder.svg?height=50&width=50" alt="Anh Hoa Bakery">
-                <span>ANH HOA BAKERY</span>
-            </div>
-            <ul class="nav-menu">
-                <li><a href="index.html">TRANG CHỦ</a></li>
-                <li><a href="products.html" class="active">BÁNH TRUNG THU 2025</a></li>
-                <li><a href="products.html">BÁNH MÌ NGỌT</a></li>
-                <li><a href="products.html">BÁNH KEM & BÁNH SINH NHẬT</a></li>
-                <li><a href="products.html">COOKIES & MACARONS</a></li>
-                <li><a href="contact.html">LIÊN HỆ</a></li>
-            </ul>
-        </nav>
-    </div>
-</header>
 
-<!-- Products Page -->
-<section class="products-page">
-    <div class="container">
-        <div class="page-header">
-            <h1>SẢN PHẨM</h1>
-            <p>Khám phá bộ sưu tập bánh ngọt cao cấp của chúng tôi</p>
-        </div>
-
-        <!-- Category Filter -->
-        <div class="category-filter">
-            <button class="filter-btn active" data-category="all">Tất cả</button>
-            <button class="filter-btn" data-category="mooncake">Bánh Trung Thu</button>
-            <button class="filter-btn" data-category="cake">Bánh Kem</button>
-            <button class="filter-btn" data-category="petit">Petit Four</button>
-            <button class="filter-btn" data-category="cookies">Cookies</button>
-        </div>
-
-        <!-- Products Grid -->
-        <div class="products-grid">
-            <!-- Mooncakes -->
-            <div class="product-item" data-category="mooncake">
-                <div class="product-card">
-                    <img src="/placeholder.svg?height=250&width=250" alt="Bánh Trung Thu Cao Cấp">
-                    <div class="product-info">
-                        <h3>BÁNH TRUNG THU CAO CẤP</h3>
-                        <p class="product-description">Hộp 4 bánh, trọng lượng 90g/bánh</p>
-                        <div class="product-variants">
-                            <span class="variant">90g - 85.000₫</span>
-                            <span class="variant">120g - 95.000₫</span>
-                            <span class="variant">180g - 115.000₫</span>
-                        </div>
-                        <div class="product-actions">
-                            <button class="add-to-cart">THÊM VÀO GIỎ</button>
-                            <button class="view-details">XEM CHI TIẾT</button>
+            <!-- Products Grid -->
+            <div class="products-grid">
+                <!-- Mooncakes -->
+                <div class="product-item" data-category="mooncake">
+                    <div class="product-card">
+                        <img src="/placeholder.svg?height=250&width=250" alt="Bánh Trung Thu Cao Cấp">
+                        <div class="product-info">
+                            <h3>BÁNH TRUNG THU CAO CẤP</h3>
+                            <p class="product-description">Hộp 4 bánh, trọng lượng 90g/bánh</p>
+                            <div class="product-variants">
+                                <span class="variant">90g - 85.000₫</span>
+                                <span class="variant">120g - 95.000₫</span>
+                                <span class="variant">180g - 115.000₫</span>
+                            </div>
+                            <div class="product-actions">
+                                <button class="add-to-cart">THÊM VÀO GIỎ</button>
+                                <button class="view-details">XEM CHI TIẾT</button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="product-item" data-category="mooncake">
-                <div class="product-card">
-                    <img src="/placeholder.svg?height=250&width=250" alt="Bánh Trung Thu Truyền Thống">
-                    <div class="product-info">
-                        <h3>BÁNH TRUNG THU TRUYỀN THỐNG</h3>
-                        <p class="product-description">Hộp 4 bánh, hương vị cổ điển</p>
-                        <div class="product-variants">
-                            <span class="variant">90g - 65.000₫</span>
-                            <span class="variant">120g - 75.000₫</span>
-                        </div>
-                        <div class="product-actions">
-                            <button class="add-to-cart">THÊM VÀO GIỎ</button>
-                            <button class="view-details">XEM CHI TIẾT</button>
+                <div class="product-item" data-category="mooncake">
+                    <div class="product-card">
+                        <img src="/placeholder.svg?height=250&width=250" alt="Bánh Trung Thu Truyền Thống">
+                        <div class="product-info">
+                            <h3>BÁNH TRUNG THU TRUYỀN THỐNG</h3>
+                            <p class="product-description">Hộp 4 bánh, hương vị cổ điển</p>
+                            <div class="product-variants">
+                                <span class="variant">90g - 65.000₫</span>
+                                <span class="variant">120g - 75.000₫</span>
+                            </div>
+                            <div class="product-actions">
+                                <button class="add-to-cart">THÊM VÀO GIỎ</button>
+                                <button class="view-details">XEM CHI TIẾT</button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Cakes -->
-            <div class="product-item" data-category="cake">
-                <div class="product-card">
-                    <img src="/placeholder.svg?height=250&width=250" alt="Tiramisu Cake">
-                    <div class="product-info">
-                        <h3>TIRAMISU CAKE</h3>
-                        <p class="product-description">Bánh kem tiramisu thơm ngon</p>
-                        <div class="product-variants">
-                            <span class="variant">Whole - 350.000₫</span>
-                        </div>
-                        <div class="product-actions">
-                            <button class="add-to-cart">THÊM VÀO GIỎ</button>
-                            <button class="view-details">XEM CHI TIẾT</button>
+                <!-- Cakes -->
+                <div class="product-item" data-category="cake">
+                    <div class="product-card">
+                        <img src="/placeholder.svg?height=250&width=250" alt="Tiramisu Cake">
+                        <div class="product-info">
+                            <h3>TIRAMISU CAKE</h3>
+                            <p class="product-description">Bánh kem tiramisu thơm ngon</p>
+                            <div class="product-variants">
+                                <span class="variant">Whole - 350.000₫</span>
+                            </div>
+                            <div class="product-actions">
+                                <button class="add-to-cart">THÊM VÀO GIỎ</button>
+                                <button class="view-details">XEM CHI TIẾT</button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="product-item" data-category="cake">
-                <div class="product-card">
-                    <img src="/placeholder.svg?height=250&width=250" alt="Chocolate Cake">
-                    <div class="product-info">
-                        <h3>CHOCOLATE CAKE</h3>
-                        <p class="product-description">Bánh socola đậm đà</p>
-                        <div class="product-variants">
-                            <span class="variant">Whole - 320.000₫</span>
-                        </div>
-                        <div class="product-actions">
-                            <button class="add-to-cart">THÊM VÀO GIỎ</button>
-                            <button class="view-details">XEM CHI TIẾT</button>
+                <div class="product-item" data-category="cake">
+                    <div class="product-card">
+                        <img src="/placeholder.svg?height=250&width=250" alt="Chocolate Cake">
+                        <div class="product-info">
+                            <h3>CHOCOLATE CAKE</h3>
+                            <p class="product-description">Bánh socola đậm đà</p>
+                            <div class="product-variants">
+                                <span class="variant">Whole - 320.000₫</span>
+                            </div>
+                            <div class="product-actions">
+                                <button class="add-to-cart">THÊM VÀO GIỎ</button>
+                                <button class="view-details">XEM CHI TIẾT</button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Petit Fours -->
-            <div class="product-item" data-category="petit">
-                <div class="product-card">
-                    <img src="/placeholder.svg?height=250&width=250" alt="Petit Four">
-                    <div class="product-info">
-                        <h3>PETIT FOUR</h3>
-                        <p class="product-description">Bánh nhỏ tinh tế, đa dạng hương vị</p>
-                        <div class="product-variants">
-                            <span class="variant">Hộp 6 - 45.000₫</span>
-                            <span class="variant">Hộp 12 - 85.000₫</span>
-                        </div>
-                        <div class="product-actions">
-                            <button class="add-to-cart">THÊM VÀO GIỎ</button>
-                            <button class="view-details">XEM CHI TIẾT</button>
+                <!-- Petit Fours -->
+                <div class="product-item" data-category="petit">
+                    <div class="product-card">
+                        <img src="/placeholder.svg?height=250&width=250" alt="Petit Four">
+                        <div class="product-info">
+                            <h3>PETIT FOUR</h3>
+                            <p class="product-description">Bánh nhỏ tinh tế, đa dạng hương vị</p>
+                            <div class="product-variants">
+                                <span class="variant">Hộp 6 - 45.000₫</span>
+                                <span class="variant">Hộp 12 - 85.000₫</span>
+                            </div>
+                            <div class="product-actions">
+                                <button class="add-to-cart">THÊM VÀO GIỎ</button>
+                                <button class="view-details">XEM CHI TIẾT</button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Cookies -->
-            <div class="product-item" data-category="cookies">
-                <div class="product-card">
-                    <img src="/placeholder.svg?height=250&width=250" alt="Premium Cookies">
-                    <div class="product-info">
-                        <h3>COOKIES CAO CẤP</h3>
-                        <p class="product-description">Bánh quy bơ thơm ngon</p>
-                        <div class="product-variants">
-                            <span class="variant">Hộp 200g - 55.000₫</span>
-                            <span class="variant">Hộp 500g - 125.000₫</span>
-                        </div>
-                        <div class="product-actions">
-                            <button class="add-to-cart">THÊM VÀO GIỎ</button>
-                            <button class="view-details">XEM CHI TIẾT</button>
+                <!-- Cookies -->
+                <div class="product-item" data-category="cookies">
+                    <div class="product-card">
+                        <img src="/placeholder.svg?height=250&width=250" alt="Premium Cookies">
+                        <div class="product-info">
+                            <h3>COOKIES CAO CẤP</h3>
+                            <p class="product-description">Bánh quy bơ thơm ngon</p>
+                            <div class="product-variants">
+                                <span class="variant">Hộp 200g - 55.000₫</span>
+                                <span class="variant">Hộp 500g - 125.000₫</span>
+                            </div>
+                            <div class="product-actions">
+                                <button class="add-to-cart">THÊM VÀO GIỎ</button>
+                                <button class="view-details">XEM CHI TIẾT</button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
+</main>
 
-<!-- Footer (same as index.html) -->
-<footer class="footer">
-    <div class="container">
-        <div class="footer-content">
-            <div class="footer-section">
-                <h3>ANH HOA BAKERY</h3>
-                <p>Chuyên sản xuất bánh trung thu, bánh ngọt và các loại bánh cao cấp</p>
-            </div>
-            <div class="footer-section">
-                <h3>LIÊN HỆ</h3>
-                <p>📞 0901 462 179</p>
-                <p>📍 Hà Nội, Việt Nam</p>
-                <p>✉️ info@anhhoabakery.vn</p>
-            </div>
-            <div class="footer-section">
-                <h3>THEO DÕI CHÚNG TÔI</h3>
-                <div class="social-links">
-                    <a href="#">Facebook</a>
-                    <a href="#">Instagram</a>
-                    <a href="#">Zalo</a>
-                </div>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2025 Anh Hoa Bakery. All rights reserved.</p>
-        </div>
-    </div>
-</footer>
+<th:block th:fragment="extraScripts">
+    <script>
 
-<style>
-    .nav-menu a.active {
-        color: #FFD700;
-    }
+    </script>
+</th:block>
 
-    .products-page {
-        padding: 60px 0;
-        background: #f8f9fa;
-    }
-
-    .page-header {
-        text-align: center;
-        margin-bottom: 50px;
-    }
-
-    .page-header h1 {
-        font-size: 42px;
-        color: #8B4513;
-        margin-bottom: 10px;
-    }
-
-    .page-header p {
-        font-size: 18px;
-        color: #666;
-    }
-
-    .category-filter {
-        display: flex;
-        justify-content: center;
-        gap: 15px;
-        margin-bottom: 40px;
-        flex-wrap: wrap;
-    }
-
-    .filter-btn {
-        background: white;
-        border: 2px solid #8B4513;
-        color: #8B4513;
-        padding: 10px 20px;
-        border-radius: 25px;
-        cursor: pointer;
-        font-weight: bold;
-        transition: all 0.3s;
-    }
-
-    .filter-btn.active,
-    .filter-btn:hover {
-        background: #8B4513;
-        color: white;
-    }
-
-    .products-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 30px;
-    }
-
-    .product-item {
-        transition: opacity 0.3s;
-    }
-
-    .product-item.hidden {
-        display: none;
-    }
-
-    .product-info {
-        padding: 20px;
-    }
-
-    .product-description {
-        color: #666;
-        margin-bottom: 15px;
-        font-size: 14px;
-    }
-
-    .product-variants {
-        margin-bottom: 20px;
-    }
-
-    .variant {
-        display: inline-block;
-        background: #f0f0f0;
-        padding: 5px 10px;
-        border-radius: 15px;
-        font-size: 12px;
-        margin: 2px;
-        color: #8B4513;
-        font-weight: bold;
-    }
-
-    .product-actions {
-        display: flex;
-        gap: 10px;
-    }
-
-    .view-details {
-        background: transparent;
-        border: 2px solid #8B4513;
-        color: #8B4513;
-        padding: 10px 15px;
-        border-radius: 5px;
-        cursor: pointer;
-        font-weight: bold;
-        transition: all 0.3s;
-        flex: 1;
-    }
-
-    .view-details:hover {
-        background: #8B4513;
-        color: white;
-    }
-
-    .add-to-cart {
-        flex: 1;
-    }
-
-    @media (max-width: 768px) {
-        .products-grid {
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
-
-        .product-actions {
-            flex-direction: column;
-        }
-    }
-</style>
 </body>
 </html>

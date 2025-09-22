@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{fragments/layout :: layout(~{::main}, 'Trang chủ - Bakery')}">
+      th:replace="~{fragments/layout :: layout(~{::main}, 'Trang chủ - Bakery', ~{::extraHead}, ~{::extraScripts})}">
 <head>
     <!-- Tiêu đề này sẽ không được sử dụng, vì nó được truyền trực tiếp trong th:replace -->
     <title>Trang chủ - Bakery</title>
+    <th:block th:fragment="extraHead">
+    </th:block>
 </head>
 <body>
 <!-- Hero Section -->
@@ -87,5 +89,11 @@
         </div>
     </section>
 </main>
+
+<th:block th:fragment="extraScripts">
+    <script>
+
+    </script>
+</th:block>
 </body>
 </html>

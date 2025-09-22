@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 
-<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="layout(main_content, pageTitle)">
-<head>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:fragment="layout(main_content, pageTitle, extraHead, extraScripts)"><head>
     <meta charset="UTF-8">
     <!-- Sử dụng tiêu đề được truyền vào, nếu không có thì dùng title mặc định -->
     <title th:text="${pageTitle} ?: 'Bakery'">Bakery</title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <th:block th:replace="${extraHead}"></th:block>
 </head>
 
+<body>
 <header class="header">
     <div class="container">
         <div class="header-top">
@@ -68,3 +70,6 @@
         </div>
     </div>
 </footer>
+<th:block th:replace="${extraScripts}"></th:block>
+</body>
+</html>
