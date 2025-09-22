@@ -21,7 +21,9 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable) // disable for testing, enable later
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/home", "/css/**", "/js/**", "/images/**", "/products").permitAll()
+                        .requestMatchers("/", "/home", "/css/**", "/js/**", "/images/**",
+                                "/products", "/admin", "/admin/products"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(login -> login
