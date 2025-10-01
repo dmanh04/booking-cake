@@ -20,11 +20,20 @@
                 <span>📍 Hà Nội</span>
             </div>
             <!-- Nếu đã login -->
-            <div sec:authorize="isAuthenticated()" class="user-actions">
-                <span>Xin chào, <span sec:authentication="name"></span>!</span>
-                <a th:href="@{/logout}">Đăng xuất</a>
-                <a th:href="@{/cart}">🛒 Giỏ hàng</a>
+            <div sec:authorize="isAuthenticated()" class="user-dropdown-wrapper user-actions">
+                <div class="user-dropdown">
+                    <span class="user-dropdown-toggle">
+                        Xin chào, <span sec:authentication="name"></span> ▼
+                    </span>
+                    <ul class="user-dropdown-menu">
+                        <li><a th:href="@{/profile}">Profile</a></li>
+                        <li><a th:href="@{/change-password}">Đổi mật khẩu</a></li>
+                        <li><a th:href="@{/logout}">Đăng xuất</a></li>
+                    </ul>
+                </div>
+                <a th:href="@{/cart}" class="cart-link">🛒 Giỏ hàng</a>
             </div>
+
 
             <!-- Nếu chưa login -->
             <div sec:authorize="!isAuthenticated()" class="user-actions">
