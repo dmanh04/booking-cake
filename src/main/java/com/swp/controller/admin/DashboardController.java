@@ -13,8 +13,5 @@ public class DashboardController {
         return "admin/dashboard";
     }
 
-    @GetMapping("/products")
-    public String products() {
-        return "admin/products";
-    }
+    // Moved products listing to ProductAdminController. Keep only dashboard here.
 }
