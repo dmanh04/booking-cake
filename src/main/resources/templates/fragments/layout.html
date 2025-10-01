@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 
 <html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      th:fragment="layout(main_content, pageTitle, extraHead, extraScripts)"><head>
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:fragment="layout(main_content, pageTitle, extraHead, extraScripts)">
+<head>
     <meta charset="UTF-8">
     <!-- Sử dụng tiêu đề được truyền vào, nếu không có thì dùng title mặc định -->
     <title th:text="${pageTitle} ?: 'Bakery'">Bakery</title>
@@ -17,9 +19,17 @@
                 <span>📞 0901 462 179</span>
                 <span>📍 Hà Nội</span>
             </div>
-            <div class="user-actions">
-                <a href="login.html" class="active">Đăng nhập</a>
-                <a href="cart.html">🛒 Giỏ hàng</a>
+            <!-- Nếu đã login -->
+            <div sec:authorize="isAuthenticated()" class="user-actions">
+                <span>Xin chào, <span sec:authentication="name"></span>!</span>
+                <a th:href="@{/logout}">Đăng xuất</a>
+                <a th:href="@{/cart}">🛒 Giỏ hàng</a>
+            </div>
+
+            <!-- Nếu chưa login -->
+            <div sec:authorize="!isAuthenticated()" class="user-actions">
+                <a th:href="@{/login}" class="active">Đăng nhập</a>
+                <a th:href="@{/cart}">🛒 Giỏ hàng</a>
             </div>
         </div>
         <nav class="navbar">

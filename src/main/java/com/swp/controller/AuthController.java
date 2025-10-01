@@ -18,10 +18,8 @@ public class AuthController {
     private final AuthService authService;
 
     @GetMapping("/login")
-    public String login(Model model) {
-//        model.addAttribute("loginRequest", new LoginRequest());
-//        model.addAttribute("registerRequest", new RegisterRequest());
-        return "login";
+    public String loginPage() {
+        return "login"; // Trả về login.html
     }
 
     @GetMapping("/register")
