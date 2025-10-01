@@ -25,6 +25,7 @@ public class AccountInit implements CommandLineRunner {
             //admin
             RoleEntity roleadmin = roleRepository.findByName("ADMIN");
             RoleEntity rolestaff = roleRepository.findByName("STAFF");
+            RoleEntity roleUser = roleRepository.findByName("USER");
 
             UserEntity admin = new UserEntity();
             admin.setEmail("admin@gmail.com");
@@ -40,8 +41,15 @@ public class AccountInit implements CommandLineRunner {
             staff.setStatus(Boolean.TRUE);
             staff.setRole(rolestaff);
 
+            UserEntity user = new UserEntity();
+            user.setEmail("user@gmail.com");
+            user.setPassword(passwordEncoder.encode("12345"));
+            user.setStatus(Boolean.TRUE);
+            user.setRole(roleUser);
+
             userRepository.save(admin);
             userRepository.save(staff);
+            userRepository.save(user);
         }
     }
 }
