@@ -4,10 +4,12 @@ import com.swp.entity.RoleEntity;
 import com.swp.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
+@Order(1)
 public class RoleInit implements CommandLineRunner {
 
     private final RoleRepository roleRepository;
