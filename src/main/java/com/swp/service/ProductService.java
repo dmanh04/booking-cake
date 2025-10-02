@@ -34,7 +34,7 @@ public class ProductService {
     public Long createProduct(CreateProductRequest request, CategoryEntity category) {
         // Validate duplicate product name
         if (productRepository.existsByName(request.getName())) {
-            throw new IllegalArgumentException("Tên sản phẩm đã tồn tại: " + request.getName());
+            throw new RuntimeException("Tên sản phẩm đã tồn tại: " + request.getName());
         }
 
         // Validate duplicate SKUs
@@ -42,7 +42,7 @@ public class ProductService {
             for (var variant : request.getVariants()) {
                 if (variant.getSku() != null && !variant.getSku().trim().isEmpty()) {
                     if (productVariantRepository.existsBySku(variant.getSku().trim())) {
-                        throw new IllegalArgumentException("SKU đã tồn tại: " + variant.getSku());
+                        throw new RuntimeException("SKU đã tồn tại: " + variant.getSku());
                     }
                 }
             }
@@ -78,7 +78,7 @@ public class ProductService {
 
     public ProductEntity getProductById(Long productId) {
         return productRepository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy sản phẩm với ID: " + productId));
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm với ID: " + productId));
     }
 
     public List<ProductVariantEntity> getProductVariants(Long productId) {
@@ -94,7 +94,7 @@ public class ProductService {
         
         // Validate duplicate product name (exclude current product)
         if (!product.getName().equals(request.getName()) && productRepository.existsByName(request.getName())) {
-            throw new IllegalArgumentException("Tên sản phẩm đã tồn tại: " + request.getName());
+            throw new RuntimeException("Tên sản phẩm đã tồn tại: " + request.getName());
         }
 
         // Update product basic info
@@ -123,7 +123,7 @@ public class ProductService {
                     
                     // Check if SKU exists in database (compare with ALL SKUs)
                     if (productVariantRepository.existsBySku(sku)) {
-                        throw new IllegalArgumentException("SKU đã tồn tại: " + sku);
+                        throw new RuntimeException("SKU đã tồn tại: " + sku);
                     }
                 }
             }
