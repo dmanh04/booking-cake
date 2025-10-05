@@ -82,8 +82,30 @@
             }
 
             .product-variants {
-                margin-bottom: 20px;
+                margin-top: 10px;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
             }
+
+            .btn-variant {
+                display: inline-block;
+                padding: 8px 12px;
+                background: #f8f8f8;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                font-size: 14px;
+                color: #333;
+                text-decoration: none;
+                transition: all 0.2s ease;
+            }
+
+            .btn-variant:hover {
+                background: #ffe6e6;
+                border-color: #ff9999;
+                color: #c00;
+            }
+
 
             .variant {
                 display: inline-block;
@@ -132,6 +154,20 @@
                     flex-direction: column;
                 }
             }
+            .search-box {
+                display: flex;
+                justify-content: flex-start; /* căn trái */
+                margin-bottom: 30px;
+            }
+
+            .search-input {
+                padding: 8px 15px;
+                border-radius: 20px;
+                border: 1px solid #8B4513;
+                margin-right: 10px;
+                min-width: 250px;
+            }
+
         </style>
     </th:block>
 
@@ -142,131 +178,67 @@
     <section class="products-page">
         <div class="container">
             <div class="page-header">
-                <h1>SẢN PHẨM</h1>
+                <h1>Chào mừng đến với tiệm bánh Brew Cake</h1>
                 <p>Khám phá bộ sưu tập bánh ngọt cao cấp của chúng tôi</p>
             </div>
 
+
             <!-- Category Filter -->
             <div class="category-filter">
-                <button class="filter-btn active" data-category="all">Tất cả</button>
-                <button class="filter-btn" data-category="mooncake">Bánh Trung Thu</button>
-                <button class="filter-btn" data-category="cake">Bánh Kem</button>
-                <button class="filter-btn" data-category="petit">Petit Four</button>
-                <button class="filter-btn" data-category="cookies">Cookies</button>
+                <form th:action="@{/products}" method="get">
+                    <button type="submit" name="categoryId" value=""
+                            th:classappend="${selectedCategoryId == null} ? ' active'"
+                            class="filter-btn">Tất cả</button>
+                </form>
+                <form th:each="category : ${categories}"
+                      th:action="@{/products}" method="get">
+                    <button type="submit" name="categoryId" th:value="${category.id}"
+                            th:text="${category.description}"
+                            th:classappend="${selectedCategoryId == category.id} ? ' active'"
+                            class="filter-btn"></button>
+                </form>
+
             </div>
+            <div class="search-box">
+                <form th:action="@{/products}" method="get">
+                    <!-- Ô nhập search -->
+                    <input type="text" name="search" placeholder="Tìm sản phẩm..."
+                           th:value="${search}" class="search-input">
+
+                    <!-- Ẩn categoryId để giữ filter -->
+                    <input type="hidden" name="categoryId" th:value="${selectedCategoryId}">
+
+                    <button type="submit" class="filter-btn">Tìm</button>
+                </form>
+            </div>
+
+
 
             <!-- Products Grid -->
             <div class="products-grid">
                 <!-- Mooncakes -->
-                <div class="product-item" data-category="mooncake">
+                <div th:each="product : ${products}" class="product-item">
                     <div class="product-card">
-                        <img src="/placeholder.svg?height=250&width=250" alt="Bánh Trung Thu Cao Cấp">
+                        <img th:src="@{${product.imgUrl}}" alt="ảnh">
                         <div class="product-info">
-                            <h3>BÁNH TRUNG THU CAO CẤP</h3>
-                            <p class="product-description">Hộp 4 bánh, trọng lượng 90g/bánh</p>
-                            <div class="product-variants">
-                                <span class="variant">90g - 85.000₫</span>
-                                <span class="variant">120g - 95.000₫</span>
-                                <span class="variant">180g - 115.000₫</span>
-                            </div>
+                            <h3 th:text="${product.name}"></h3>
+                            <p th:text="${product.shortDescription}"></p>
+                                <div class="product-variants">
+                                    <div th:each="variant : ${product.variants}" class="variant-btn">
+                                        <a th:href="@{/cart/add(variantId=${variant.variantId})}"
+                                           class="btn-variant">
+                                            <span th:text="${#numbers.formatDecimal(variant.price, 0, 'COMMA', 0, 'POINT')}"></span> ₫
+                                        </a>
+                                    </div>
+                                </div>
                             <div class="product-actions">
                                 <button class="add-to-cart">THÊM VÀO GIỎ</button>
-                                <button class="view-details">XEM CHI TIẾT</button>
+                                <a th:href="@{/products/{id}(id=${product.productId})}" class="view-details">XEM CHI TIẾT</a>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="product-item" data-category="mooncake">
-                    <div class="product-card">
-                        <img src="/placeholder.svg?height=250&width=250" alt="Bánh Trung Thu Truyền Thống">
-                        <div class="product-info">
-                            <h3>BÁNH TRUNG THU TRUYỀN THỐNG</h3>
-                            <p class="product-description">Hộp 4 bánh, hương vị cổ điển</p>
-                            <div class="product-variants">
-                                <span class="variant">90g - 65.000₫</span>
-                                <span class="variant">120g - 75.000₫</span>
-                            </div>
-                            <div class="product-actions">
-                                <button class="add-to-cart">THÊM VÀO GIỎ</button>
-                                <button class="view-details">XEM CHI TIẾT</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Cakes -->
-                <div class="product-item" data-category="cake">
-                    <div class="product-card">
-                        <img src="/placeholder.svg?height=250&width=250" alt="Tiramisu Cake">
-                        <div class="product-info">
-                            <h3>TIRAMISU CAKE</h3>
-                            <p class="product-description">Bánh kem tiramisu thơm ngon</p>
-                            <div class="product-variants">
-                                <span class="variant">Whole - 350.000₫</span>
-                            </div>
-                            <div class="product-actions">
-                                <button class="add-to-cart">THÊM VÀO GIỎ</button>
-                                <button class="view-details">XEM CHI TIẾT</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="product-item" data-category="cake">
-                    <div class="product-card">
-                        <img src="/placeholder.svg?height=250&width=250" alt="Chocolate Cake">
-                        <div class="product-info">
-                            <h3>CHOCOLATE CAKE</h3>
-                            <p class="product-description">Bánh socola đậm đà</p>
-                            <div class="product-variants">
-                                <span class="variant">Whole - 320.000₫</span>
-                            </div>
-                            <div class="product-actions">
-                                <button class="add-to-cart">THÊM VÀO GIỎ</button>
-                                <button class="view-details">XEM CHI TIẾT</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Petit Fours -->
-                <div class="product-item" data-category="petit">
-                    <div class="product-card">
-                        <img src="/placeholder.svg?height=250&width=250" alt="Petit Four">
-                        <div class="product-info">
-                            <h3>PETIT FOUR</h3>
-                            <p class="product-description">Bánh nhỏ tinh tế, đa dạng hương vị</p>
-                            <div class="product-variants">
-                                <span class="variant">Hộp 6 - 45.000₫</span>
-                                <span class="variant">Hộp 12 - 85.000₫</span>
-                            </div>
-                            <div class="product-actions">
-                                <button class="add-to-cart">THÊM VÀO GIỎ</button>
-                                <button class="view-details">XEM CHI TIẾT</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Cookies -->
-                <div class="product-item" data-category="cookies">
-                    <div class="product-card">
-                        <img src="/placeholder.svg?height=250&width=250" alt="Premium Cookies">
-                        <div class="product-info">
-                            <h3>COOKIES CAO CẤP</h3>
-                            <p class="product-description">Bánh quy bơ thơm ngon</p>
-                            <div class="product-variants">
-                                <span class="variant">Hộp 200g - 55.000₫</span>
-                                <span class="variant">Hộp 500g - 125.000₫</span>
-                            </div>
-                            <div class="product-actions">
-                                <button class="add-to-cart">THÊM VÀO GIỎ</button>
-                                <button class="view-details">XEM CHI TIẾT</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </section>
