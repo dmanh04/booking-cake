@@ -7,7 +7,6 @@ import com.swp.entity.ProductVariantEntity;
 import com.swp.repository.ProductRepository;
 import com.swp.repository.ProductVariantRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -92,7 +91,7 @@ public class ProductService {
     @Transactional
     public void updateProduct(Long productId, CreateProductRequest request, CategoryEntity category) {
         ProductEntity product = getProductById(productId);
-        
+
         // Validate duplicate product name (exclude current product)
         if (!product.getName().equals(request.getName()) && productRepository.existsByName(request.getName())) {
             throw new RuntimeException("Tên sản phẩm đã tồn tại: " + request.getName());
@@ -108,6 +107,8 @@ public class ProductService {
         if (request.getImageFile() != null && !request.getImageFile().isEmpty()) {
             String newImagePath = storeImage(request.getImageFile());
             product.setImgUrl(newImagePath);
+        } else {
+            product.setImgUrl("");
         }
 
         productRepository.save(product);
@@ -121,7 +122,7 @@ public class ProductService {
             for (var variant : request.getVariants()) {
                 if (variant.getSku() != null && !variant.getSku().trim().isEmpty()) {
                     String sku = variant.getSku().trim();
-                    
+
                     // Check if SKU exists in database (compare with ALL SKUs)
                     if (productVariantRepository.existsBySku(sku)) {
                         throw new RuntimeException("SKU đã tồn tại: " + sku);
@@ -149,18 +150,18 @@ public class ProductService {
     @Transactional
     public void deleteProduct(Long productId) {
         ProductEntity product = getProductById(productId);
-        
+
         // Delete all variants first (cascade delete)
         List<ProductVariantEntity> variants = productVariantRepository.findByProductProductId(productId);
         productVariantRepository.deleteAll(variants);
-        
+
         // Delete the product
         productRepository.delete(product);
     }
 
     private String storeImage(MultipartFile file) {
         if (file == null || file.isEmpty()) {
-            return null;
+            return "";
         }
         try {
             if (!Files.exists(UPLOAD_ROOT)) {
@@ -173,7 +174,7 @@ public class ProductService {
             // Return web-accessible path instead of absolute file path
             return "/images/" + filename;
         } catch (IOException e) {
-            throw new RuntimeException("Lưu ảnh thất bại", e);
+            return "";
         }
     }
 
