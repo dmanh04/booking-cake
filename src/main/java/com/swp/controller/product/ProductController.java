@@ -111,7 +111,7 @@ public class ProductController {
         cartItem.setCart(cart);
         cartItemService.save(cartItem);
 
-        return "redirect:/products/" + id;
+        return "redirect:/cart" ;
 
 
     }
