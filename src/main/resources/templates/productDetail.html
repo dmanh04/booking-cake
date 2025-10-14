@@ -173,7 +173,11 @@
                 </div>
 
                 <div class="product-actions">
-                    <button class="view-details">MUA NGAY</button>
+                    <form id="buyNowForm" th:action="@{/products/buy-now}" method="post" style="flex: 1;">
+                        <input type="hidden" name="variantId" id="buyNowVariantId" />
+                        <input type="hidden" name="quantity" id="buyNowQuantity" value="1"/>
+                        <button type="submit" class="view-details" style="width: 100%;">MUA NGAY</button>
+                    </form>
                     <form id="addToCartForm" th:action="@{'/products/' + ${productDetail.productId} + '/add'}" method="get">
                         <input type="hidden" name="variantId" id="selectedVariantId" />
                         <input type="hidden" name="quantity" id="selectedQuantity" value="1"/>
@@ -286,6 +290,7 @@
 
         function updateQuantityInput(value) {
             document.getElementById('selectedQuantity').value = value;
+            document.getElementById('buyNowQuantity').value = value;
         }
 
         function updateDisplayedPrice() {
@@ -294,7 +299,7 @@
             document.getElementById('displayPrice').innerText = formatPrice(total);
         }
 
-        // Khi submit form, gắn variantId vào input ẩn
+        // Khi submit form thêm vào giỏ hàng
         document.getElementById('addToCartForm').addEventListener('submit', function(e) {
             if (!selectedVariantId) {
                 e.preventDefault();
@@ -305,6 +310,16 @@
 
             const productId = /*[[${productDetail.productId}]]*/ '1';
             this.action = `/products/${productId}/add/${selectedVariantId}`;
+        });
+
+        // Khi submit form mua ngay
+        document.getElementById('buyNowForm').addEventListener('submit', function(e) {
+            if (!selectedVariantId) {
+                e.preventDefault();
+                alert("Vui lòng chọn 1 biến thể trước khi mua.");
+                return;
+            }
+            document.getElementById('buyNowVariantId').value = selectedVariantId;
         });
     </script>
 
