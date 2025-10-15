@@ -7,6 +7,10 @@
     <th:block th:fragment="extraHead">
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <style>
+
+            .modal { display: none; /* mặc định ẩn */ }
+            .modal.show { display: block; } /* hiện khi có lỗi */
+
             /* Include admin styles from dashboard.html */
             .admin-header {
                 background: #2c3e50;
@@ -605,6 +609,11 @@
                     margin: 2% auto;
                 }
             }
+
+
+            /*style modal*/
+
+
         </style>
     </th:block>
 </head>
@@ -686,6 +695,7 @@
 
 
 
+
                                 <button class="btn-delete"
                                         th:data-id="${u.id}"
                                         th:data-name="${u.name}"
@@ -737,113 +747,53 @@
     </div>
 
     <!-- Modal thêm người dùng -->
-    <!-- Modal: Thêm người dùng -->
-    <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form th:action="@{/admin/user/create}" method="post" th:object="${adminCreateUserRequest}">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="addUserModalLabel">Thêm người dùng mới</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
-                    </div>
-
-                    <div class="modal-body">
-                        <!-- Họ tên -->
-                        <div class="mb-3">
-                            <label for="fullName" class="form-label">Họ tên</label>
-                            <input type="text" th:field="*{fullName}" class="form-control" id="fullName" placeholder="Nhập họ tên">
-                            <div class="text-danger" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
-                        </div>
-
-                        <!-- Email -->
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email" th:field="*{email}" class="form-control" id="email" placeholder="Nhập email">
-                            <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
-                        </div>
-
-                        <!-- Mật khẩu -->
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Mật khẩu</label>
-                            <input type="password" th:field="*{password}" class="form-control" id="password" placeholder="Nhập mật khẩu">
-                            <div class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
-                        </div>
-
-                        <!-- Số điện thoại -->
-                        <div class="mb-3">
-                            <label for="phone" class="form-label">Số điện thoại</label>
-                            <input type="text" th:field="*{phone}" class="form-control" id="phone" placeholder="Nhập số điện thoại (nếu có)">
-                        </div>
-
-                        <!-- Vai trò -->
-                        <div class="mb-3">
-                            <label for="roleId" class="form-label">Vai trò</label>
-                            <select th:field="*{roleId}" class="form-select" id="roleId">
-                                <option value="">-- Chọn vai trò --</option>
-                                <option th:each="role : ${roles}"
-                                        th:value="${role.id}"
-                                        th:text="${role.name}">
-                                </option>
-                            </select>
-                            <div class="text-danger" th:if="${#fields.hasErrors('roleId')}" th:errors="*{roleId}"></div>
-                        </div>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                        <button type="submit" class="btn btn-primary">Thêm</button>
-                    </div>
-                </form>
+    <div id="addUserModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Thêm người dùng mới</h2>
+                <span class="close" onclick="closeModal()">&times;</span>
             </div>
-        </div>
-    </div>
-
-
-    <!-- UPDATE USER MODAL -->
-    <div class="modal fade" id="updateUserModal" tabindex="-1" aria-labelledby="updateUserLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <form th:action="@{/admin/user/update}" method="post" th:object="${adminUpdateUserRequest}" class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="updateUserLabel">Cập nhật người dùng</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
-                </div>
-                <div class="modal-body">
-
-                    <input type="hidden" id="updateUserId" name="id"/>
-
-                    <div class="mb-3">
-                        <label for="updateFullName" class="form-label">Họ tên</label>
-                        <input type="text" id="updateFullName" name="fullName" class="form-control" required/>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="updateEmail" class="form-label">Email</label>
-                        <input type="email" id="updateEmail" name="email" class="form-control" required/>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="updatePhone" class="form-label">Số điện thoại</label>
-                        <input type="text" id="updatePhone" name="phone" class="form-control"/>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="updatePassword" class="form-label">Mật khẩu mới (tùy chọn)</label>
-                        <input type="password" id="updatePassword" name="password" class="form-control"/>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="updateRole" class="form-label">Vai trò</label>
-                        <select id="updateRole" name="roleId" class="form-select" required>
-                            <option value="" disabled selected>-- Chọn vai trò --</option>
-                            <option th:each="r : ${roles}" th:value="${r.id}" th:text="${r.name}"></option>
-                        </select>
-                    </div>
-
+            <form th:action="@{/admin/user/create}" method="post" th:object="${adminCreateUserRequest}" class="product-form">
+                <!-- Họ tên -->
+                <div class="form-group">
+                    <label for="fullName">Họ tên</label>
+                    <input type="text" th:field="*{fullName}" id="fullName" placeholder="Nhập họ tên">
+                    <div class="error-message" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
                 </div>
 
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                <!-- Email -->
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" th:field="*{email}" id="email" placeholder="Nhập email">
+                    <div class="error-message" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                </div>
+
+                <!-- Mật khẩu -->
+                <div class="form-group">
+                    <label for="password">Mật khẩu</label>
+                    <input type="password" th:field="*{password}" id="password" placeholder="Nhập mật khẩu">
+                    <div class="error-message" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                </div>
+
+                <!-- Số điện thoại -->
+                <div class="form-group">
+                    <label for="phone">Số điện thoại</label>
+                    <input type="text" th:field="*{phone}" id="phone" placeholder="Nhập số điện thoại (nếu có)">
+                </div>
+
+                <!-- Vai trò -->
+                <div class="form-group">
+                    <label for="roleId">Vai trò</label>
+                    <select th:field="*{roleId}" id="roleId">
+                        <option value="">-- Chọn vai trò --</option>
+                        <option th:each="role : ${roles}" th:value="${role.id}" th:text="${role.name}"></option>
+                    </select>
+                    <div class="error-message" th:if="${#fields.hasErrors('roleId')}" th:errors="*{roleId}"></div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal()">Đóng</button>
+                    <button type="submit" class="btn-primary">Thêm</button>
                 </div>
             </form>
         </div>
@@ -852,6 +802,65 @@
 
 
 
+
+    <div id="updateUserModal" class="modal" th:classappend="${showUpdateModal} ? ' show' : ''">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Cập nhật người dùng</h2>
+                <span class="close" onclick="closeUpdateModal()">&times;</span>
+            </div>
+            <form th:action="@{/admin/user/update}" method="post" th:object="${adminUpdateUserRequest}" class="product-form">
+                <!-- ID (ẩn) -->
+                <input type="hidden" th:field="*{id}" name="id"/>
+
+                <!-- Họ tên -->
+                <div class="form-group">
+                    <label for="updateFullName">Họ tên</label>
+                    <input type="text" th:field="*{fullName}" id="updateFullName" placeholder="Nhập họ tên">
+                    <div class="error-message" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
+                </div>
+
+                <!-- Email -->
+                <div class="form-group">
+                    <label for="updateEmail">Email</label>
+                    <input type="email" th:field="*{email}" id="updateEmail" placeholder="Nhập email">
+                    <div class="error-message" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                </div>
+
+                <!-- Mật khẩu -->
+                <div class="form-group">
+                    <label for="updatePassword">Mật khẩu (để trống nếu không đổi)</label>
+                    <input type="password" th:field="*{password}" id="updatePassword" placeholder="Nhập mật khẩu mới">
+                    <div class="error-message" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                </div>
+
+                <!-- Số điện thoại -->
+                <div class="form-group">
+                    <label for="updatePhone">Số điện thoại</label>
+                    <input type="text" th:field="*{phone}" id="updatePhone" placeholder="Nhập số điện thoại (nếu có)">
+                </div>
+
+                <!-- Vai trò -->
+                <div class="form-group">
+                    <label for="updateRoleId">Vai trò</label>
+                    <select th:field="*{roleId}" id="updateRoleId">
+                        <option value="">-- Chọn vai trò --</option>
+                        <option th:each="role : ${roles}" th:value="${role.id}" th:text="${role.name}"></option>
+                    </select>
+                    <div class="error-message" th:if="${#fields.hasErrors('roleId')}" th:errors="*{roleId}"></div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeUpdateModal()">Hủy</button>
+                    <button type="submit" class="btn-primary">Cập nhật</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div th:if="${param.successUpdate}" class="alert alert-success">
+        Cập nhật người dùng thành công!
+    </div>
 
 
 
@@ -990,23 +999,49 @@
         }
 
 
-        // Hàm được gọi từ onclick trên nút (mặc định truyền this)
-            function openUpdateModalFromButton(button) {
-            const id = button.getAttribute("data-id");
-            const fullName = button.getAttribute("data-fullname");
-            const email = button.getAttribute("data-email");
-            const phone = button.getAttribute("data-phone");
-            const roleId = button.getAttribute("data-roleid");
+        // Mở modal update user và điền dữ liệu
+        function openUpdateModalFromButton(button) {
+            const userId = button.dataset.id;
+            const fullName = button.dataset.fullname;
+            const email = button.dataset.email;
+            const phone = button.dataset.phone || '';
+            const roleId = button.dataset.roleid || '';
 
-            document.getElementById("updateUserId").value = id;
-            document.getElementById("updateFullName").value = fullName;
-            document.getElementById("updateEmail").value = email;
-            document.getElementById("updatePhone").value = phone;
-            document.getElementById("updateRole").value = roleId;
+            const modal = document.getElementById('updateUserModal');
+            modal.style.display = 'block';
 
-            const modal = new bootstrap.Modal(document.getElementById('updateUserModal'));
-            modal.show();
+            modal.querySelector('#updateFullName').value = fullName;
+            modal.querySelector('#updateEmail').value = email;
+            modal.querySelector('#updatePhone').value = phone;
+            modal.querySelector('#updateRoleId').value = roleId;
+            modal.querySelector('input[name="id"]').value = userId;
         }
+
+
+        // Đóng modal update user
+        function closeUpdateModal() {
+            document.getElementById('updateUserModal').style.display = 'none';
+        }
+
+        // Đóng modal khi click ra ngoài
+        window.onclick = function(event) {
+            const addModal = document.getElementById('addUserModal');
+            const updateModal = document.getElementById('updateUserModal');
+            if (event.target === addModal) {
+                addModal.style.display = "none";
+            } else if (event.target === updateModal) {
+                updateModal.style.display = "none";
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const modal = document.getElementById('updateUserModal');
+            if(modal.classList.contains('show')) {
+                modal.style.display = 'block';
+            }
+        });
+
+
 
 
     </script>

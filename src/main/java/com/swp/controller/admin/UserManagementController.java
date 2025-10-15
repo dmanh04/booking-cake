@@ -116,29 +116,41 @@ public class UserManagementController {
     }
 
     @PostMapping("/update")
-    public String updateUserByAdmin(@Valid @ModelAttribute("adminUpdateUserRequest") AdminUpdateUserRequest request,
-                                    BindingResult bindingResult,
-                                    ModelMap model) {
+    public String updateUserByAdmin(
+            @Valid @ModelAttribute("adminUpdateUserRequest") AdminUpdateUserRequest request,
+            BindingResult bindingResult,
+            ModelMap model) {
 
+        // Luôn load danh sách users và roles
+        List<UserEntity> users = userService.findAll();
+        model.put("users", users);
+        model.put("roles", userService.getAllRoles());
+        model.put("currentPage", 0);
+        model.put("totalPages", (int) Math.ceil((double) users.size() / 10));
+        model.put("search", "");
+        model.put("roleId", null);
+
+        // Nếu có lỗi validate, giữ dữ liệu và mở modal
         if (bindingResult.hasErrors()) {
-            model.put("roles", userService.getAllRoles());
-            model.put("users", userService.findAll());
-            model.put("currentPage", 0);
-            model.put("totalPages", 0);
-            model.put("search", "");
-            model.put("roleId", null);
-            return "admin/users";
+            model.addAttribute("adminUpdateUserRequest", request); // giữ dữ liệu
+            model.addAttribute("showUpdateModal", true); // JS mở modal
+            return "admin/users"; // ko redirect, trả về view luôn
         }
 
         try {
             authService.updateUserByAdmin(request);
-            model.put("successMessage", "Cập nhật người dùng thành công!");
+            // Nếu thành công, redirect và hiển thị message
+            return "redirect:/admin/user?successUpdate=true";
         } catch (Exception e) {
-            model.put("errorMessage", e.getMessage());
+            model.addAttribute("errorMessage", e.getMessage());
+            model.addAttribute("adminUpdateUserRequest", request); // giữ dữ liệu
+            model.addAttribute("showUpdateModal", true); // mở modal
+            return "admin/users";
         }
-
-        return "redirect:/admin/user";
     }
+
+
+
 
 
 }
