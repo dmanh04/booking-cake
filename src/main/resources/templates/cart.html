@@ -20,10 +20,10 @@
 
 <body class="min-h-screen">
 <main>
-<!--    Header Image-->
+    <!--    Header Image-->
     <div class="w-full h-2 bg-gradient-to-r from-green-600 via-red-600 to-gray-800"></div>
 
-<!--    Main Container-->
+    <!--    Main Container-->
     <div class="max-w-6xl mx-auto px-4 py-8">
         Title
         <h1 class="text-3xl font-bold text-center mb-12 tracking-wider">GIỎ HÀNG</h1>
@@ -37,7 +37,7 @@
         </div>
 
         <!--      Product 1-->
-        <form th:action="@{/cart/update}" method="post">
+        <div>
             <div th:each="item, iterStat : ${cartItems}">
                 <div class="grid grid-cols-12 gap-4 items-center mb-8 bg-white p-4 rounded-lg shadow-sm cart-item">
                     <!-- Sản phẩm -->
@@ -65,9 +65,21 @@
                     </div>
 
                     <!-- Tổng -->
-                    <div class="col-span-2 text-center">
+                    <div class="col-span-1 text-center">
                 <span class="item-total font-semibold text-gray-800"
                       th:text="${#numbers.formatDecimal(item.productVariantId.price * item.quantity, 0, 'COMMA', 0, 'POINT')}"></span>
+                    </div>
+
+                    <!-- Nút Xóa -->
+                    <div class="col-span-1 text-center">
+                        <form th:action="@{/cart/remove}" method="post" class="inline">
+                            <input type="hidden" name="id" th:value="${item.id}"/>
+                            <button type="submit"
+                                    class="text-red-500 hover:text-red-700 font-semibold"
+                                    onclick="return confirm('Xóa sản phẩm này khỏi giỏ hàng?')">
+                                Xóa
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -79,8 +91,11 @@
                     <p class="text-2xl font-bold text-gray-800 cart-grand-total">0₫</p>
                 </div>
                 <div class="flex gap-3">
-                    <a th:href="@{/products}" class="px-6 py-3 bg-gray-500 text-white rounded hover:bg-gray-600 transition">Tiếp tục mua sắm</a>
-                    <a th:href="@{/order/checkout}" class="px-6 py-3 bg-gray-800 text-white rounded hover:bg-gray-700 transition">Thanh toán</a>
+                    <a th:href="@{/products}"
+                       class="px-6 py-3 bg-gray-500 text-white rounded hover:bg-gray-600 transition">Tiếp tục mua
+                        sắm</a>
+                    <a th:href="@{/order/checkout}"
+                       class="px-6 py-3 bg-gray-800 text-white rounded hover:bg-gray-700 transition">Thanh toán</a>
                 </div>
             </div>
         </form>
@@ -104,62 +119,61 @@
         </svg>
     </button>
 
-    </main>
+</main>
 
-    <th:block th:fragment="extraScripts">
-        <script>
-            document.addEventListener("DOMContentLoaded", () => {
-                const cartItems = document.querySelectorAll(".cart-item");
+<th:block th:fragment="extraScripts">
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const cartItems = document.querySelectorAll(".cart-item");
 
-                cartItems.forEach(item => {
-                    const minusBtn = item.querySelector(".btn-minus");
-                    const plusBtn = item.querySelector(".btn-plus");
-                    const quantityInput = item.querySelector(".quantity-input");
-                    const priceElement = item.querySelector(".unit-price");
-                    const totalElement = item.querySelector(".item-total");
+            cartItems.forEach(item => {
+                const minusBtn = item.querySelector(".btn-minus");
+                const plusBtn = item.querySelector(".btn-plus");
+                const quantityInput = item.querySelector(".quantity-input");
+                const priceElement = item.querySelector(".unit-price");
+                const totalElement = item.querySelector(".item-total");
 
-                    const unitPrice = parseInt(priceElement.textContent.replace(/\D/g, ""));
+                const unitPrice = parseInt(priceElement.textContent.replace(/\D/g, ""));
 
-                    function updateTotal() {
-                        const quantity = parseInt(quantityInput.value);
-                        const newTotal = unitPrice * quantity;
-                        totalElement.textContent = newTotal.toLocaleString("vi-VN") + "₫";
-                        updateCartTotal();
-                    }
-
-                    minusBtn.addEventListener("click", (e) => {
-                        e.preventDefault();
-                        if (quantityInput.value > 1) {
-                            quantityInput.value--;
-                            updateTotal();
-                        }
-                    });
-
-                    plusBtn.addEventListener("click", (e) => {
-                        e.preventDefault();
-                        quantityInput.value++;
-                        updateTotal();
-                    });
-
-                    quantityInput.addEventListener("input", updateTotal);
-                });
-
-                function updateCartTotal() {
-                    let total = 0;
-                    document.querySelectorAll(".item-total").forEach(span => {
-                        total += parseInt(span.textContent.replace(/\D/g, "")) || 0;
-                    });
-                    document.querySelector(".cart-grand-total").textContent = total.toLocaleString("vi-VN") + "₫";
+                function updateTotal() {
+                    const quantity = parseInt(quantityInput.value);
+                    const newTotal = unitPrice * quantity;
+                    totalElement.textContent = newTotal.toLocaleString("vi-VN") + "₫";
+                    updateCartTotal();
                 }
 
-                // 🟢 Gọi ngay sau khi trang tải xong
-                updateCartTotal();
+                minusBtn.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    if (quantityInput.value > 1) {
+                        quantityInput.value--;
+                        updateTotal();
+                    }
+                });
+
+                plusBtn.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    quantityInput.value++;
+                    updateTotal();
+                });
+
+                quantityInput.addEventListener("input", updateTotal);
             });
-        </script>
+
+            function updateCartTotal() {
+                let total = 0;
+                document.querySelectorAll(".item-total").forEach(span => {
+                    total += parseInt(span.textContent.replace(/\D/g, "")) || 0;
+                });
+                document.querySelector(".cart-grand-total").textContent = total.toLocaleString("vi-VN") + "₫";
+            }
+
+            // 🟢 Gọi ngay sau khi trang tải xong
+            updateCartTotal();
+        });
+    </script>
 
 
-
-    </th:block>
+</th:block>
 
 
 </body>
