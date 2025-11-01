@@ -79,5 +79,9 @@ public class UserService {
         return true;
     }
 
+    public void update(UserEntity user) {
+        userRepository.save(user);
+    }
+
 
 }

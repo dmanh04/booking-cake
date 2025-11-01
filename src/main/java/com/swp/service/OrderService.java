@@ -90,6 +90,10 @@ public class OrderService {
         return orderRepository.findById(orderId);
     }
 
+    public OrderEntity findOrderById(Long orderId) {
+        return orderRepository.findById(orderId).get();
+    }
+
     public List<OrderEntity> findByUser(UserEntity user) {
         return orderRepository.findByUserOrderByOrderDateDesc(user);
     }
