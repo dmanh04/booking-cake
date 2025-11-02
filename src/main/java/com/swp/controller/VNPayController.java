@@ -75,7 +75,7 @@ public class VNPayController {
         if (bankCode != null && !bankCode.isEmpty()) {
             vnp_Params.put("vnp_BankCode", bankCode);
         }
-        
+
         vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
         vnp_Params.put("vnp_OrderInfo", order.getOrderId().toString());
         vnp_Params.put("vnp_OrderType", orderType);
