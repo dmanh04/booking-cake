@@ -13,6 +13,20 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  mail:
+    #    Cần sửa lại thông tin này
+    username: studywork052025@gmail.com
+    password: "wmrv djdn ledy sopf"
+    host: smtp.gmail.com
+    port: 587
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    default-encoding: UTF-8
 
 server:
   port: 8080
@@ -24,3 +38,5 @@ vnpay:
   tmnCode: ILYI8NLG
   secretKey: U4901LRDT468HJR30O6OKP8LCQHFBTX8
   apiUrl: https://sandbox.vnpayment.vn/merchant_webapi/api/transaction
+
+
