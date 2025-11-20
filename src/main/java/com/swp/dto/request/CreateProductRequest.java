@@ -27,6 +27,8 @@ public class CreateProductRequest {
     @NotNull
     private java.util.List<VariantRequest> variants;
 
+    private Boolean active = true;
+
     @lombok.Data
     public static class VariantRequest {
         @NotBlank
