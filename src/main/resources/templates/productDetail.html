@@ -162,6 +162,14 @@
 
 <body>
 <th:block th:fragment="main">
+
+    <div th:if="${errorMessage}" th:utext="${errorMessage}" id="errorMessage" style="display:none"></div>
+    <script th:if="${errorMessage}">
+        alert(document.getElementById('errorMessage').innerText);
+    </script>
+
+
+
     <!-- Nội dung trang chính -->
     <div class="container mx-auto px-4 py-8 max-w-7xl">
         <!-- Product Detail Section -->
