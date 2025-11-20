@@ -426,6 +426,35 @@
             }
             document.getElementById('buyNowVariantId').value = selectedVariantId;
         });
+
+        const qtyInput = document.getElementById('quantity');
+
+        qtyInput.addEventListener('input', function () {
+            let value = parseInt(qtyInput.value);
+
+            // Nếu nhập ký tự không phải số → chuyển về 1
+            if (isNaN(value) || value < 1) {
+                value = 1;
+            }
+
+            // Không cho vượt quá stock
+            if (selectedStock && value > selectedStock) {
+                value = selectedStock;
+            }
+
+            qtyInput.value = value;
+
+            updateQuantityInput(value);
+            checkStockValidity();
+            updateDisplayedPrice();
+        });
+
+        qtyInput.addEventListener('blur', function () {
+            if (qtyInput.value === "" || qtyInput.value === "0") {
+                qtyInput.value = 1;
+                updateQuantityInput(1);
+            }
+        });
     </script>
 
 
