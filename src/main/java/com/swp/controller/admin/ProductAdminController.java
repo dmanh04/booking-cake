@@ -2,28 +2,35 @@ package com.swp.controller.admin;
 
 import com.swp.dto.request.CreateProductRequest;
 import com.swp.entity.CategoryEntity;
+import com.swp.entity.ProductEntity;
+import com.swp.entity.ProductVariantEntity;
 import com.swp.entity.enums.TimeUnit;
 import com.swp.repository.CategoryRepository;
+import com.swp.repository.ProductRepository;
+import com.swp.repository.ProductVariantRepository;
 import com.swp.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.http.ResponseEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import com.swp.entity.ProductEntity;
-import com.swp.entity.ProductVariantEntity;
-import com.swp.repository.ProductRepository;
-import com.swp.repository.ProductVariantRepository;
 
 @Controller
 @RequestMapping("/admin/products")
@@ -66,7 +73,7 @@ public class ProductAdminController {
             productService.createProduct(request, category);
             redirectAttributes.addFlashAttribute("successMessage", "Tạo sản phẩm thành công");
             return "redirect:/admin/products";
-            
+
         } catch (IllegalArgumentException e) {
             // Handle validation errors (duplicate name/SKU)
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
@@ -109,9 +116,9 @@ public class ProductAdminController {
 
     @PostMapping("/{id}/update")
     public String updateProduct(@PathVariable Long id,
-                               @Valid @ModelAttribute("createProductRequest") CreateProductRequest request,
-                               BindingResult bindingResult,
-                               org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
+                                @Valid @ModelAttribute("createProductRequest") CreateProductRequest request,
+                                BindingResult bindingResult,
+                                org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
         try {
             if (bindingResult.hasErrors()) {
                 redirectAttributes.addFlashAttribute("errorMessage", "Dữ liệu không hợp lệ");
@@ -119,25 +126,25 @@ public class ProductAdminController {
             }
             CategoryEntity category = categoryRepository.findById(request.getCategoryId())
                     .orElseThrow(() -> new IllegalArgumentException("Danh mục không tồn tại"));
-            TimeUnit timeUnit = category.getTimeUnit();
-            Integer expireTime = category.getExpireTime();
+//            TimeUnit timeUnit = category.getTimeUnit();
+//            Integer expireTime = category.getExpireTime();
             request.getVariants().forEach(product -> {
-                LocalDate expiryDate = null;
-                if (expireTime != null && expireTime > 0 && timeUnit != null) {
-                    LocalDate now = LocalDate.now();
-                    switch (timeUnit) {
-                        case DAY -> expiryDate = now.plusDays(expireTime);
-                        case WEEK -> expiryDate = now.plusWeeks(expireTime);
-                        case MONTH -> expiryDate = now.plusMonths(expireTime);
-                        case YEAR -> expiryDate = now.plusYears(expireTime);
-                    }
-                }
-                product.setExpiryDate(expiryDate);
+                LocalDate expiryDate = LocalDate.now().plus(1, ChronoUnit.MONTHS);
+//                if (expireTime != null && expireTime > 0 && timeUnit != null) {
+//                    LocalDate now = LocalDate.now();
+//                    switch (timeUnit) {
+//                        case DAY -> expiryDate = now.plusDays(expireTime);
+//                        case WEEK -> expiryDate = now.plusWeeks(expireTime);
+//                        case MONTH -> expiryDate = now.plusMonths(expireTime);
+//                        case YEAR -> expiryDate = now.plusYears(expireTime);
+//                    }
+//                }
+                product.setExpiryDate(product.getExpiryDate() == null ? expiryDate : product.getExpiryDate());
             });
             productService.updateProduct(id, request, category);
             redirectAttributes.addFlashAttribute("successMessage", "Cập nhật sản phẩm thành công");
             return "redirect:/admin/products";
-            
+
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
             return "redirect:/admin/products";
@@ -160,12 +167,12 @@ public class ProductAdminController {
 
     @PostMapping("/{id}/delete")
     public String deleteProduct(@PathVariable Long id,
-                               org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
+                                org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
         try {
             productService.deleteProduct(id);
             redirectAttributes.addFlashAttribute("successMessage", "Xóa sản phẩm thành công");
             return "redirect:/admin/products";
-            
+
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
             return "redirect:/admin/products";
@@ -184,7 +191,7 @@ public class ProductAdminController {
                            @RequestParam(name = "category", defaultValue = "") String category,
                            @RequestParam(name = "search", defaultValue = "") String search) {
         Pageable pageable = PageRequest.of(Math.max(page, 0), Math.max(size, 1));
-        
+
         // Determine which search method to use
         Page<ProductEntity> productPage;
         if (!category.isEmpty() && !search.isEmpty()) {
@@ -193,7 +200,7 @@ public class ProductAdminController {
             productPage = productRepository.findByCategoryNameContaining(category, pageable);
         } else if (!search.isEmpty()) {
             productPage = productRepository.findByNameOrShortDescriptionContaining(search, pageable);
-            
+
             if (productPage.getContent().isEmpty()) {
                 List<ProductVariantEntity> variantsBySku = productVariantRepository.findBySkuContaining(search);
                 if (!variantsBySku.isEmpty()) {
@@ -202,7 +209,7 @@ public class ProductAdminController {
                             .map(variant -> variant.getProduct().getProductId())
                             .distinct()
                             .collect(Collectors.toList());
-                    
+
                     // Get products by IDs - create a custom query for this
                     productPage = productRepository.findProductsByIds(productIds, pageable);
                 }
@@ -211,20 +218,20 @@ public class ProductAdminController {
             // No search criteria, show all products
             productPage = productRepository.findAll(pageable);
         }
-        
+
         // Load variants for all products in the current page
         List<Long> productIds = productPage.getContent().stream()
                 .map(ProductEntity::getProductId)
                 .collect(Collectors.toList());
-        
+
         List<ProductVariantEntity> allVariants = productVariantRepository.findAll().stream()
                 .filter(variant -> productIds.contains(variant.getProduct().getProductId()))
                 .collect(Collectors.toList());
-        
+
         // Group variants by product ID
         Map<Long, List<ProductVariantEntity>> variantsByProduct = allVariants.stream()
                 .collect(Collectors.groupingBy(variant -> variant.getProduct().getProductId()));
-        
+
         model.addAttribute("createProductRequest", new CreateProductRequest());
         model.addAttribute("categories", categoryRepository.findAll());
         model.addAttribute("productPage", productPage);
