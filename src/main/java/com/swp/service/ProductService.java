@@ -178,11 +178,19 @@ public class ProductService {
 //        // CASE 3: remove variants that were not included in request
         for (ProductVariantEntity oldVariant : existingVariants) {
             String oldSku = oldVariant.getSku() != null ? oldVariant.getSku().trim() : null;
-
             if (oldSku != null && !requestSkus.contains(oldSku)) {
-                productVariantRepository.delete(oldVariant);
+                try {
+                    productVariantRepository.delete(oldVariant);
+                } catch (Exception ex) {
+                    // THƯỜNG LÀ ConstraintViolationException hoặc DataIntegrityViolationException
+                    throw new RuntimeException(
+                            "Không thể xóa biến thể SKU: " + oldSku +
+                                    " vì đã tồn tại trong đơn hàng."
+                    );
+                }
             }
         }
+
     }
 
 
