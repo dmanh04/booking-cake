@@ -175,7 +175,7 @@ public class ProductService {
             }
         }
 
-        // CASE 3: remove variants that were not included in request
+//        // CASE 3: remove variants that were not included in request
         for (ProductVariantEntity oldVariant : existingVariants) {
             String oldSku = oldVariant.getSku() != null ? oldVariant.getSku().trim() : null;
 

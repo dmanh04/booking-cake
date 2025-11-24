@@ -1254,7 +1254,8 @@
                     <div class="form-group">
                         <label>SKU</label>
                         <input type="text" name="variants[${index}].sku" placeholder="VD: LAK90" required
-                               value="${variant ? (variant.sku || '') : ''}">
+                               value="${variant ? (variant.sku || '') : ''}"
+                               ${variant ? 'readonly' : ''}>
                     </div>
                 </div>
                 <div class="form-row">
